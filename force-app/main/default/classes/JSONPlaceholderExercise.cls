@@ -8,13 +8,24 @@ public class JSONPlaceholderExercise {
      * @return String - The JSON response from the API
      */
     public static String getPostById(Integer postId) {
-        // TODO: Student Implementation
-        // 1. Create a new HTTP request
-        // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId
-        // 3. Set the HTTP method to 'GET'
-        // 4. Send the request and get the response
-        // 5. Return the response body as string
-        return null;
+        String response;
+        Http http = new Http();                                         // 1. Create a new HTTP request
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(BASE_URL + '/posts/' + postId);               // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId
+        req.setMethod('GET');                                        // 3. Set the HTTP method to 'GET'
+        try {                                                       // 4. Send the request and get the response
+            HttpResponse res = http.send(req);                     // 5. Return the response body as string
+            if(res.getStatusCode() >= 200 && res.getStatusCode() <300) {
+                response = res.getBody();
+            }
+            else {
+                response = 'Status code: ' + res.getStatusCode() + 'Status: ' + res.getStatus();
+            }
+        } 
+        catch (Exception ex) {
+            response = 'There was an error: ' + ex.getMessage();
+        }
+        return response;
     }
     
     /**
@@ -25,16 +36,20 @@ public class JSONPlaceholderExercise {
      * @param userId - The user ID creating the post
      * @return String - The JSON response from the API
      */
-    public static String createPost(String title, String body, Integer userId) {
-        // TODO: Student Implementation
-        // 1. Create a new HTTP request
-        // 2. Set the endpoint URL using BASE_URL + '/posts'
-        // 3. Set the HTTP method to 'POST'
-        // 4. Create a JSON string with the post data
-        // 5. Set the request body
-        // 6. Send the request and get the response
-        // 7. Return the response body as string
-        return null;
+    public static String createPost(String title, String body, Integer userId) {        
+        HttpRequest req = new HttpRequest();                                // 1. Create a new HTTP request        
+        req.setEndpoint(BASE_URL + '/posts');                              // 2. Set the endpoint URL using BASE_URL + '/posts'
+        req.setMethod('POST');                                             // 3. Set the HTTP method to 'POST'
+        Map<String, Object> jsonMap = new Map<String, Object>{
+            'userId' => userId,
+            'title' => title,
+            'body' => body
+            };
+        String jsonMapString = JSON.serialize(jsonMap);
+        req.setBody(jsonMapString);      
+        Http http = new Http();
+        HttpResponse res = Http.send(req);                           // 6. Send the request and get the response        
+        return res.getBody();                                       // 7. Return the response body as string
     }
     
     /**
@@ -47,15 +62,34 @@ public class JSONPlaceholderExercise {
      * @return String - The JSON response from the API
      */
     public static String updatePost(Integer postId, String title, String body, Integer userId) {
-        // TODO: Student Implementation
-        // 1. Create a new HTTP request
-        // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId
-        // 3. Set the HTTP method to 'PUT'
-        // 4. Create a JSON string with the updated post data
-        // 5. Set the request body
-        // 6. Send the request and get the response
-        // 7. Return the response body as string
-        return null;
+        String response;          
+        Http http = new Http(); // 1. Create a new HTTP request
+        HttpRequest req = new HttpRequest();           
+        req.setEndpoint(BASE_URL + '/posts/' + postId);// 2. Set the endpoint URL using BASE_URL + '/posts/' + postId           
+        req.setMethod('PUT'); // 3. Set the HTTP method to 'PUT'
+        req.setHeader('Content-Type', 'application/json'); 
+        Map<String, Object> jsonMap = new Map<String, Object>{
+            'id' => postId,
+            'title' => title,
+            'body' => body,
+            'userId' => userId
+            };
+        String jsonMapString = JSON.serialize(jsonMap);
+        //String jsonString = '{"id" : 1,"title" : " ' + title + ' ", "body" : "' + body + '","userId" : ' + userId + '}';// 4. Create a JSON string with the updated post data
+        req.setBody(jsonMapString);            // 5. Set the request body
+        try {            // 6. Send the request and get the response
+            HttpResponse res = Http.send(req);
+            if(res.getStatusCode() >= 200 && res.getStatusCode() <300) {
+                response = res.getBody();
+            }
+            else {
+                response = 'Status code: ' + res.getStatusCode() + 'Status: ' + res.getStatus();
+            }
+        } 
+        catch (Exception ex) {
+            response = 'There was an error: ' + ex.getMessage();
+        } 
+        return response;// 7. Return the response body as string
     }
     
     /**
@@ -66,15 +100,27 @@ public class JSONPlaceholderExercise {
      * @return String - The JSON response from the API
      */
     public static String patchPostTitle(Integer postId, String title) {
-        // TODO: Student Implementation
-        // 1. Create a new HTTP request
-        // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId
-        // 3. Set the HTTP method to 'PATCH'
-        // 4. Create a JSON string with only the title
-        // 5. Set the request body
-        // 6. Send the request and get the response
-        // 7. Return the response body as string
-        return null;
+        String response;            
+        Http http = new Http();     // 1. Create a new HTTP request
+        HttpRequest req = new HttpRequest();            
+        req.setEndpoint(BASE_URL + '/posts/' + postId);     // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId            
+        req.setMethod('PATCH');     // 3. Set the HTTP method to 'PATCH'            
+        String body = '{"title" : "' + title + '"}';        // 4. Create a JSON string with only the title            
+        req.setBody(body);      // 5. Set the request body            
+        try {                   // 6. Send the request and get the response
+            HttpResponse res = Http.send(req);
+            if(res.getStatusCode() >= 200 && res.getStatusCode() < 300 ) {
+                response = res.getBody();
+            }
+            else {
+                response = 'Status code: ' + res.getStatusCode() + 'Status: ' + res.getStatus();
+            }
+        } 
+        catch (Exception ex) {
+            response = 'There was an error: ' + ex.getMessage();
+        }
+            
+        return response;// 7. Return the response body as string
     }
     
     /**
@@ -84,12 +130,13 @@ public class JSONPlaceholderExercise {
      * @return Integer - The HTTP status code from the response
      */
     public static Integer deletePost(Integer postId) {
-        // TODO: Student Implementation
-        // 1. Create a new HTTP request
-        // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId
-        // 3. Set the HTTP method to 'DELETE'
-        // 4. Send the request and get the response
-        // 5. Return the response status code
-        return null;
+        Integer response;            
+        Http http = new Http(); // 1. Create a new HTTP request
+        HttpRequest req = new HttpRequest();            
+        req.setEndpoint(BASE_URL + '/posts/' + postId); // 2. Set the endpoint URL using BASE_URL + '/posts/' + postId            
+        req.setMethod('DELETE'); // 3. Set the HTTP method to 'DELETE'            
+        HttpResponse res = http.send(req); // 4. Send the request and get the response            
+        response = res.getStatusCode(); // 5. Return the response status code
+        return response;
     }
 } 
